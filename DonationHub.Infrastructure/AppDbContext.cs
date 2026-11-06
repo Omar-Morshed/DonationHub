@@ -7,6 +7,8 @@ namespace DonationHub.Infrastructure;
 public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options){}
+    
+    public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
     public DbSet<Campaign> Campaigns { get; set; }
     public DbSet<Category> Categories { get; set; }
     public DbSet<Donation> Donations { get; set; }
@@ -15,12 +17,13 @@ public class AppDbContext : DbContext
     public DbSet<PaymentAttempt> PaymentAttempts { get; set; }
     public DbSet<ProcessedStripeEvent> ProcessedStripeEvents { get; set; }
 
+
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<IdempotencyRecord>().HasKey(ir => ir.Key);
-        modelBuilder.Entity<ProcessedStripeEvent>().HasKey(pse => pse.EventId);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 
 }
