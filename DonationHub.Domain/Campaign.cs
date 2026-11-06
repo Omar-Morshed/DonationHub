@@ -2,10 +2,11 @@ using System;
 using System.ComponentModel.Design;
 using System.Security.AccessControl;
 using DonationHub.Domain.Enums;
+using DonationHub.Domain.Interfaces;
 
 namespace DonationHub.Domain;
 
-public class Campaign
+public class Campaign : ISoftDeletable
 {
     public Guid Id { get; private set; }
     public string TitleAr { get; private set; } = "";
@@ -16,13 +17,19 @@ public class Campaign
     public decimal RaisedAmount { get; private set; }
     public DateTime EndDate { get; private set; }
     public Guid CategoryId { get; private set; }
+    public Category Category { get; set; } = null!;
     public string? BannerFileName { get; private set; }
     public CampaignStatus Status { get; private set; }
     public Guid CreatedByUserId { get; private set; }
+    public ApplicationUser User { get; set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
-    public bool IsDeleted { get; private set; }
+    // public bool IsDeleted { get; private set; }
     public byte[] RowVersion { get; private set; } // Concurrency Token توكن التزامن , used to avoid Race Condition
+
+    public IReadOnlyList<Donation> Donations { get; set; } = new List<Donation>();
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAtUtc { get; set; }
 
     public static Campaign Create(
         string titleAr,
@@ -105,4 +112,5 @@ public class Campaign
         }
         return true;
     }
+
 }

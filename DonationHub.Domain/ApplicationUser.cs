@@ -11,11 +11,14 @@ public class ApplicationUser
     public string FullName { get; private set; } = "";
     public string PreferredLanguage { get; private set; } = "en";
     public bool IsActive { get; private set; }
-    public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
-    // public string Role { get; set; }
+    public DateTime CreatedAt { get; private set; }
+
+    public IReadOnlyList<Campaign> Campaigns { get; private set; } = new List<Campaign>();
+    public IReadOnlyList<Donation> Donations { get; private set; } = new List<Donation>();
+
 
     private ApplicationUser() { }
-    public ApplicationUser Create(
+    public static ApplicationUser Create(
         Guid id,
         string email,
         string username,
