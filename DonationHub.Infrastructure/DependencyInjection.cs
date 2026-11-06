@@ -1,4 +1,6 @@
 using System;
+using DonationHub.Application.Interfaces;
+using DonationHub.Infrastructure.Implementation;
 using DonationHub.Infrastructure.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +24,8 @@ public static class DependencyInjection
             //? What is the difference between the `QueryTrackingBehavior.NoTracking` & `QueryTrackingBehavior.NoTrackingWithIdentityResolution` ?
             //* WithIdentityResolution if it is in the change tracker gets the data once .. while the NoTracking gets it on every call (when using many `.include()`)
         });
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
         
     }
 }

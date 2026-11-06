@@ -21,19 +21,16 @@ public class SoftDeleteInterceptor : SaveChangesInterceptor
 
     private static void ApplySoftDelete(DbContext? context)
     {
-        if(context is null)
+        if (context is null)
             return;
-        
-        var entries = context.ChangeTracker.Entries<ISoftDeletable>();
-        foreach(var entry in entries)
+
+        var entries = context.ChangeTracker.Entries<ISoftDeletable>().Where(entry => entry.State == EntityState.Deleted);
+        foreach (var entry in entries)
         {
-            if(entry.State == EntityState.Deleted)
-            {
-                entry.State = EntityState.Modified;
-                // entity.Property(x => x.IsDeleted).CurrentValue = true;
-                entry.Entity.IsDeleted = true;
-                entry.Property(x => x.DeletedAtUtc).CurrentValue = DateTime.UtcNow;
-            }
+            entry.State = EntityState.Modified;
+            // entity.Property(x => x.IsDeleted).CurrentValue = true;
+            entry.Entity.IsDeleted = true;
+            entry.Property(x => x.DeletedAtUtc).CurrentValue = DateTime.UtcNow;
         }
     }
 }
