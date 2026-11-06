@@ -20,5 +20,6 @@ public class DonationConfiguration : IEntityTypeConfiguration<Donation>
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.Property(d => d.Amount).HasPrecision(18, 2);
+        builder.HasQueryFilter(x => x.IsDeleted == false);
     }
 }

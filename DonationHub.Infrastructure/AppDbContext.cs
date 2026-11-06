@@ -1,5 +1,6 @@
 using System;
 using DonationHub.Domain;
+using DonationHub.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DonationHub.Infrastructure;
@@ -22,7 +23,7 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+        modelBuilder.Entity<ISoftDeletable>().HasQueryFilter(x => x.IsDeleted == false);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 

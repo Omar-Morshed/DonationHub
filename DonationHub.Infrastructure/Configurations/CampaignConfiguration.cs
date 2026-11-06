@@ -26,6 +26,8 @@ public class CampaignConfiguration : IEntityTypeConfiguration<Campaign>
             .HasForeignKey(cam => cam.CreatedByUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
+
+        builder.HasQueryFilter(x => x.IsDeleted == false);
         /* builder.HasMany(cam => cam.Donations)
             .WithOne(don => don.Campaign)
             .HasForeignKey(don => don.CampaignId); */

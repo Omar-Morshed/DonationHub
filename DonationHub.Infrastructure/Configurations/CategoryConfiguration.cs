@@ -11,5 +11,6 @@ public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
         builder.HasKey(c => c.Id);
         /* builder.HasMany(category => category.Campaigns).WithOne(campaign => campaign.Category); */
+        builder.HasQueryFilter(x => x.IsDeleted == false);
     }
 }
