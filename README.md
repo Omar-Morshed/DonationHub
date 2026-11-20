@@ -1,4 +1,4 @@
-# DonationHub — Backend API (Sprint 1)
+# DonationHub — Backend API
 
 **DonationHub** is a Donation Management & Crowdfunding Platform built with **.NET 10**, following **Clean Architecture** principles, **Vertical Slice** feature organization, and a **Rich Domain Model**.
 
