@@ -60,7 +60,6 @@ public class AuthService(UserManager<ApplicationUser> _userManager, IUnitOfWork 
             Email = request.Email,
         };
 
-        //! Need a Data Seeder for putting the required Roles
         // await _userManager.AddToRoleAsync(applicationUser, "Customer");
         var identityResult = await _userManager.CreateAsync(applicationUser, request.Password);
 

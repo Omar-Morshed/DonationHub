@@ -12,5 +12,8 @@ public static class DependencyInjection
             .BindConfiguration("JWT")
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services.AddMediatR(options =>
+            options.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
     }
 }
