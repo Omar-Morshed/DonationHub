@@ -1,13 +1,14 @@
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
 // using DonationHub.Domain.Enums;
 
 namespace DonationHub.Domain;
 
-public class ApplicationUser
+public class User
 {
     public Guid Id { get; private set; }
-    public string Email { get; private set; } = "";
-    public string Username { get; private set; } = "";
+    // public string Email { get; private set; } = "";
+    // public string Username { get; private set; } = "";
     public string FullName { get; private set; } = "";
     public string PreferredLanguage { get; private set; } = "en";
     public bool IsActive { get; private set; }
@@ -16,28 +17,27 @@ public class ApplicationUser
     public IReadOnlyList<Campaign> Campaigns { get; private set; } = new List<Campaign>();
     public IReadOnlyList<Donation> Donations { get; private set; } = new List<Donation>();
 
-
-    private ApplicationUser() { }
-    public static ApplicationUser Create(
+    private User() { }
+    public static User Create(
         Guid id,
-        string email,
-        string username,
+        // string email,
+        // string username,
         string fullName,
         string preferredLanguage,
         DateTime utcNow
     )
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(email);
-        ArgumentException.ThrowIfNullOrWhiteSpace(username);
+        // ArgumentException.ThrowIfNullOrWhiteSpace(email);
+        // ArgumentException.ThrowIfNullOrWhiteSpace(username);
         ArgumentException.ThrowIfNullOrWhiteSpace(fullName);
 
         var lang = preferredLanguage?.ToLowerInvariant() == "en" ? "en" : "ar";
 
-        return new ApplicationUser()
+        return new User()
         {
             Id = id == Guid.Empty ? Guid.NewGuid() : id,
-            Email = email,
-            Username = username,
+            // Email = email,
+            // Username = username,
             FullName = fullName,
             PreferredLanguage = lang,
             IsActive = true,

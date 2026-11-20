@@ -11,17 +11,19 @@ public class UnitOfWork : IUnitOfWork
     public IDonationRepository DonationRepository { get; private set; }
 
     public ICategoryRepository CategoryRepository { get; private set; }
+    public IUserRepository UserRepository { get; private set; }
     public UnitOfWork(AppDbContext context)
     {
         _context = context;
         CampaignRepository = new CampaignRepository(_context);
         CategoryRepository = new CategoryRepository(_context);
         DonationRepository = new DonationRepository(_context);
+        UserRepository = new UserRepository(_context);
     }
 
-    public async Task<int> CompleteAsync(CancellationToken cancellationToken = default)
+    public Task<int> CompleteAsync(CancellationToken cancellationToken = default)
     {
-        return await _context.SaveChangesAsync(cancellationToken);
+        return _context.SaveChangesAsync(cancellationToken);
     }
 
     public void Dispose()

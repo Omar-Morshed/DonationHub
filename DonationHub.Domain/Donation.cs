@@ -10,7 +10,7 @@ public class Donation : ISoftDeletable
     public Guid CampaignId { get; private set; }
     public Campaign Campaign { get; set; } = null!;
     public Guid DonorUserId { get; private set; }
-    public ApplicationUser User { get; set; } = null!;
+    public User User { get; set; } = null!;
     public decimal Amount { get; private set; }
     public DonationStatus Status { get; private set; }
     public string FailureReason { get; private set; } = ""; //* Is the human readable failure message

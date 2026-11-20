@@ -7,6 +7,7 @@ public interface IUnitOfWork : IDisposable
     ICampaignRepository CampaignRepository { get; }
     IDonationRepository DonationRepository { get; }
     ICategoryRepository CategoryRepository { get; }
+    IUserRepository UserRepository { get; }
 
     Task<int> CompleteAsync(CancellationToken cancellationToken = default);
 }

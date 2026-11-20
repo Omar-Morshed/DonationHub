@@ -1,9 +1,6 @@
 <Solution>
-  <Folder Name="/Docs/">
-    <File Path="Relationships.excalidraw" />
-  </Folder>
-  <Project Path="DonationHub.API/DonationHub.API.csproj" />
-  <Project Path="DonationHub.Application/DonationHub.Application.csproj" />
-  <Project Path="DonationHub.Domain/DonationHub.Domain.csproj" />
-  <Project Path="DonationHub.Infrastructure/DonationHub.Infrastructure.csproj" />
+  <Project Path="DonationHub.API/DonationHub.API.csproj"/>
+  <Project Path="DonationHub.Application/DonationHub.Application.csproj"/>
+  <Project Path="DonationHub.Domain/DonationHub.Domain.csproj"/>
+  <Project Path="DonationHub.Infrastructure/DonationHub.Infrastructure.csproj"/>
 </Solution>

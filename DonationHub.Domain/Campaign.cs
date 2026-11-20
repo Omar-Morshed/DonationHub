@@ -21,7 +21,7 @@ public class Campaign : ISoftDeletable
     public string? BannerFileName { get; private set; }
     public CampaignStatus Status { get; private set; }
     public Guid CreatedByUserId { get; private set; }
-    public ApplicationUser User { get; set; } = null!;
+    public User User { get; set; } = null!;
     public DateTime CreatedAt { get; private set; }
     public DateTime UpdatedAt { get; private set; }
     // public bool IsDeleted { get; private set; }

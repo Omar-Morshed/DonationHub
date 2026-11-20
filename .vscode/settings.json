@@ -1,0 +1,11 @@
+{
+    "csharp-dev-tools.entityFramework.migrationPreferences": {
+        "DonationHub.slnx": {
+            "startupProject": "DonationHub.API\\DonationHub.API.csproj",
+            "migrationsProject": "DonationHub.Infrastructure\\DonationHub.Infrastructure.csproj",
+            "dbContextClass": "AppDbContext",
+            "migrationsFolder": "Migrations",
+            "targetMigration": ""
+        }
+    }
+}
