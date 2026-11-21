@@ -42,4 +42,30 @@ public class AuthController : ControllerBase
         /* var result = await _authService.LoginAsync(request);
         return Ok(result); */
     }
+
+    [HttpPost("Logout")]
+    public IActionResult Logout()
+    {
+        return Ok();
+    }
+
+    [HttpPost("Refresh")]
+    public IActionResult Refresh()
+    {
+        return Ok();
+    }
+
+    [Authorize]
+    [HttpGet("Me")]
+    public IActionResult Me()
+    {
+        return Ok();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost("Admin/Staff")]
+    public IActionResult Staff()
+    {
+        return Ok();
+    }
 }
