@@ -12,6 +12,9 @@ public class UnitOfWork : IUnitOfWork
 
     public ICategoryRepository CategoryRepository { get; private set; }
     public IUserRepository UserRepository { get; private set; }
+
+    public IRefreshTokenRepository RefreshTokenRepository { get; private set; }
+
     public UnitOfWork(AppDbContext context)
     {
         _context = context;
@@ -19,6 +22,7 @@ public class UnitOfWork : IUnitOfWork
         CategoryRepository = new CategoryRepository(_context);
         DonationRepository = new DonationRepository(_context);
         UserRepository = new UserRepository(_context);
+        RefreshTokenRepository = new RefreshTokenRepository(_context);
     }
 
     public Task<int> CompleteAsync(CancellationToken cancellationToken = default)

@@ -1,5 +1,7 @@
 using DonationHub.Application.Features.Auth.DTOs;
 using DonationHub.Application.Features.Auth.Login;
+using DonationHub.Application.Features.Auth.Logout;
+using DonationHub.Application.Features.Auth.Refresh;
 using DonationHub.Application.Features.Auth.Register;
 using DonationHub.Application.Interfaces;
 using MediatR;
@@ -38,21 +40,29 @@ public class AuthController : ControllerBase
     public async Task<ActionResult<AuthResponseDTO>> LoginAsync(LoginDTO request)
     {
         var result = await _sender.Send(new LoginCommand(request));
+        if (result is null)
+            return BadRequest("Invalid Username or Password !");
         return Ok(result);
         /* var result = await _authService.LoginAsync(request);
         return Ok(result); */
     }
 
     [HttpPost("Logout")]
-    public IActionResult Logout()
+    public async Task<IActionResult> LogoutAsync(string rawToken)
     {
-        return Ok();
+        var result = await _sender.Send(new LogoutCommand(rawToken));
+        if (!result)
+            return BadRequest("Wrong Refresh Token !");
+        return Ok("Done !");
     }
 
     [HttpPost("Refresh")]
-    public IActionResult Refresh()
+    public async Task<IActionResult> RefreshTokenAsync(Guid UserId)
     {
-        return Ok();
+        var newRawToken = await _sender.Send(new RefreshTokenCommand(UserId));
+        if (newRawToken is null)
+            return BadRequest("IDK");
+        return Ok(newRawToken);
     }
 
     [Authorize]

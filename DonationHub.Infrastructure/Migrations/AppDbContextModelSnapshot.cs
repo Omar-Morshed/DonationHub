@@ -91,7 +91,7 @@ namespace DonationHub.Infrastructure.Migrations
 
                     b.HasIndex("CreatedByUserId");
 
-                    b.ToTable("Campaigns");
+                    b.ToTable("Campaigns", (string)null);
                 });
 
             modelBuilder.Entity("DonationHub.Domain.Category", b =>
@@ -130,7 +130,7 @@ namespace DonationHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("DonationHub.Domain.Donation", b =>
@@ -181,7 +181,7 @@ namespace DonationHub.Infrastructure.Migrations
 
                     b.HasIndex("DonorUserId");
 
-                    b.ToTable("Donations");
+                    b.ToTable("Donations", (string)null);
                 });
 
             modelBuilder.Entity("DonationHub.Domain.IdempotencyRecord", b =>
@@ -213,7 +213,7 @@ namespace DonationHub.Infrastructure.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("IdempotencyRecords");
+                    b.ToTable("IdempotencyRecords", (string)null);
                 });
 
             modelBuilder.Entity("DonationHub.Domain.PaymentAttempt", b =>
@@ -250,7 +250,7 @@ namespace DonationHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentAttempts");
+                    b.ToTable("PaymentAttempts", (string)null);
                 });
 
             modelBuilder.Entity("DonationHub.Domain.ProcessedStripeEvent", b =>
@@ -267,7 +267,7 @@ namespace DonationHub.Infrastructure.Migrations
 
                     b.HasKey("EventId");
 
-                    b.ToTable("ProcessedStripeEvents");
+                    b.ToTable("ProcessedStripeEvents", (string)null);
                 });
 
             modelBuilder.Entity("DonationHub.Domain.RefreshToken", b =>
@@ -297,7 +297,7 @@ namespace DonationHub.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("RefreshToken");
+                    b.ToTable("RefreshToken", (string)null);
                 });
 
             modelBuilder.Entity("DonationHub.Domain.User", b =>

@@ -4,8 +4,7 @@
             "startupProject": "DonationHub.API\\DonationHub.API.csproj",
             "migrationsProject": "DonationHub.Infrastructure\\DonationHub.Infrastructure.csproj",
             "dbContextClass": "AppDbContext",
-            "migrationsFolder": "Migrations",
-            "targetMigration": ""
+            "migrationsFolder": "Migrations"
         }
     }
 }

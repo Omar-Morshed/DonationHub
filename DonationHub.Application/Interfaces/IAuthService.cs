@@ -5,6 +5,8 @@ namespace DonationHub.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<User?> RegisterAsync(RegistrationDTO request);
-    Task<AuthResponseDTO?> LoginAsync(LoginDTO request);
+    Task<User?> RegisterAsync(RegistrationDTO request, CancellationToken cancellationToken);
+    Task<AuthResponseDTO?> LoginAsync(LoginDTO request, CancellationToken cancellationToken);
+    Task<bool> LogoutAsync(string rawToken, CancellationToken cancellationToken);
+    Task<string> GenerateAndSaveRefreshToken(Guid userId);
 }

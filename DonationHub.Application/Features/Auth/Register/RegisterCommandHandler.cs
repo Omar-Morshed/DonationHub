@@ -14,7 +14,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, bool>
 
     public async Task<bool> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        var user = await _authService.RegisterAsync(request: request.UserInfo);
+        var user = await _authService.RegisterAsync(request: request.UserInfo, cancellationToken);
         return user is not null;
     }
 

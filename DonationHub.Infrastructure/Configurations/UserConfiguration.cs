@@ -12,7 +12,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.ToTable("Users");
 
         builder.HasOne<ApplicationUser>()
-            .WithOne()
+            .WithOne(appUser => appUser.DomainUser)
             .HasForeignKey<User>(u => u.Id)
             .OnDelete(DeleteBehavior.Cascade);
     }
