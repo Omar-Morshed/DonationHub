@@ -1,5 +1,4 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.Intrinsics.Arm;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -11,9 +10,7 @@ using DonationHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
-using static System.Security.Claims.ClaimTypes;
 
 namespace DonationHub.Infrastructure.Implementation;
 
@@ -41,10 +38,11 @@ public class AuthService(UserManager<ApplicationUser> _userManager, IUnitOfWork 
 
         // // var user = await _uow.UserRepository.GetByIdAsync(applicationUser.Id);
 
+        var (_, refreshToken) = await GenerateAndSaveRefreshToken(applicationUser.DomainUser.Id);
         return new AuthResponseDTO(
             AccessToken: await CreateTokenAsync(applicationUser),
-            ExpiresAt: DateTime.UtcNow.AddMinutes(15),
-            RefreshToken: await GenerateAndSaveRefreshToken(applicationUser.DomainUser.Id),
+            ExpiresAt: DateTime.UtcNow.AddMinutes(jwtOptions.ExpiryMinutes),
+            RefreshToken: refreshToken,
             UserId: applicationUser.Id,
             Email: applicationUser.Email ?? "",
             FullName: applicationUser.DomainUser.FullName ?? "",
@@ -73,10 +71,11 @@ public class AuthService(UserManager<ApplicationUser> _userManager, IUnitOfWork 
         };
 
         var identityResult = await _userManager.CreateAsync(applicationUser, request.Password);
-        await _userManager.AddToRoleAsync(applicationUser, "Donor");
 
         if (!identityResult.Succeeded)
             return null; //! needs another logic
+
+        await _userManager.AddToRoleAsync(applicationUser, "Donor");
 
         return user;
     }
@@ -98,12 +97,71 @@ public class AuthService(UserManager<ApplicationUser> _userManager, IUnitOfWork 
         return true;
     }
 
+    public async Task<AuthResponseDTO?> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken)
+    {
+        var tokenHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(refreshToken)));
+        var storedToken = await _uow.RefreshTokenRepository.GetByTokenHash(tokenHash);
+
+        if (storedToken is null || storedToken.RevokedAt is not null)
+            return null;
+
+        if (storedToken.ExpiresAt <= DateTime.UtcNow)
+            return null;
+
+        var applicationUser = await _userManager.Users
+                                .Include(appUser => appUser.DomainUser)
+                                .FirstOrDefaultAsync(appUser => appUser.DomainUser.Id == storedToken.UserId, cancellationToken);
+
+        if (applicationUser is null || !applicationUser.DomainUser.IsActive)
+            return null;
+
+        var accessToken = await CreateTokenAsync(applicationUser);
+
+        var (refreshTokenId, newRefreshToken) = await GenerateAndSaveRefreshToken(applicationUser.DomainUser.Id);
+        storedToken.Revoke(DateTime.UtcNow, refreshTokenId.ToString());
+
+        var roles = await _userManager.GetRolesAsync(applicationUser);
+
+        return new AuthResponseDTO(
+            AccessToken: accessToken,
+            ExpiresAt: DateTime.UtcNow.AddMinutes(jwtOptions.ExpiryMinutes),
+            RefreshToken: newRefreshToken,
+            UserId: applicationUser.DomainUser.Id,
+            Email: applicationUser.Email ?? "",
+            FullName: applicationUser.DomainUser.FullName,
+            PreferredLanguage: applicationUser.DomainUser.PreferredLanguage,
+            Roles: [.. roles]
+        );
+    }
+
+    public async Task<UserProfileDTO?> GetCurrentUserAsync(Guid userId)
+    {
+        var applicationUser = await _userManager.Users
+            .AsNoTracking()
+            .Include(appUser => appUser.DomainUser)
+            .FirstOrDefaultAsync(appUser => appUser.Id == userId);
+
+        if (applicationUser is null)
+            return null;
+
+        return new UserProfileDTO(
+            Id: applicationUser.Id,
+            Email: applicationUser.Email ?? "N/A",
+            FullName: applicationUser.DomainUser.FullName,
+            PreferredLanguage: applicationUser.DomainUser.PreferredLanguage,
+            IsActive: applicationUser.DomainUser.IsActive,
+            CreatedAt: applicationUser.DomainUser.CreatedAt,
+            Roles: [.. await _userManager.GetRolesAsync(applicationUser)]
+        );
+    }
+
     private async Task<string> CreateTokenAsync(ApplicationUser user)
     {
         var claims = new List<Claim>()
         {
-            new Claim(ClaimTypes.NameIdentifier, $"{user.Id}"),
-            new Claim(ClaimTypes.Name, user.UserName ?? ""),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.NameIdentifier, $"{user.DomainUser.Id}"),
+            new Claim(ClaimTypes.Name, user.DomainUser.FullName ?? ""),
         };
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -118,13 +176,13 @@ public class AuthService(UserManager<ApplicationUser> _userManager, IUnitOfWork 
             issuer: jwtOptions.Issuer,
             audience: jwtOptions.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddMinutes(15),
+            expires: DateTime.UtcNow.AddMinutes(jwtOptions.ExpiryMinutes),
             signingCredentials: creds
         );
         return new JwtSecurityTokenHandler().WriteToken(tokenDescriptor);
     }
 
-    public async Task<string> GenerateAndSaveRefreshToken(Guid userId)
+    private async Task<(Guid refreshTokenId, string rawToken)> GenerateAndSaveRefreshToken(Guid userId)
     {
         var rawToken = GenerateRefreshToken();
         var tokenHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(rawToken)));
@@ -132,13 +190,13 @@ public class AuthService(UserManager<ApplicationUser> _userManager, IUnitOfWork 
             userId: userId,
             tokenHash: tokenHash,
             createAt: DateTime.UtcNow,
-            expiresAt: DateTime.UtcNow.AddDays(7)
+            expiresAt: DateTime.UtcNow.AddDays(jwtOptions.RefreshTokenExpiryDays)
         );
 
         await _uow.RefreshTokenRepository.AddAsync(refreshToken);
         await _uow.CompleteAsync();
 
-        return rawToken;
+        return (refreshToken.Id, rawToken);
     }
     private static string GenerateRefreshToken()
     {

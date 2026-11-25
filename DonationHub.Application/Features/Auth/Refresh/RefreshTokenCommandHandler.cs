@@ -1,9 +1,10 @@
+using DonationHub.Application.Features.Auth.DTOs;
 using DonationHub.Application.Interfaces;
 using MediatR;
 
 namespace DonationHub.Application.Features.Auth.Refresh;
 
-public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, string?>
+public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponseDTO?>
 {
     private readonly IAuthService _authService;
 
@@ -12,9 +13,11 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, s
         this._authService = authService;
     }
 
-    public async Task<string?> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+    public async Task<AuthResponseDTO?> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var newRawToken = await _authService.GenerateAndSaveRefreshToken(request.UserId);
+        if (request.RefreshToken is null)
+            return null;
+        var newRawToken = await _authService.RefreshTokenAsync(request.RefreshToken, cancellationToken);
         return newRawToken;
     }
 

@@ -31,13 +31,14 @@ public class RefreshToken
         };
     }
 
-    public bool Revoke(DateTime utcNow)
+    public bool Revoke(DateTime utcNow, string ReplacedByTokenId = "")
     {
         // لو ملغي قبل كده أو وقت الإلغاء غير منطقي
         if (RevokedAt is not null || utcNow < CreateAt)
             return false;
 
         RevokedAt = utcNow;
+        this.ReplacedByTokenId = ReplacedByTokenId;
         return true;
     }
 }

@@ -1,4 +1,6 @@
+using System.Security.Claims;
 using DonationHub.Application.Features.Auth.DTOs;
+using DonationHub.Application.Features.Auth.GetCurrentUser;
 using DonationHub.Application.Features.Auth.Login;
 using DonationHub.Application.Features.Auth.Logout;
 using DonationHub.Application.Features.Auth.Refresh;
@@ -57,9 +59,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("Refresh")]
-    public async Task<IActionResult> RefreshTokenAsync(Guid UserId)
+    public async Task<IActionResult> RefreshTokenAsync(string? refreshToken)
     {
-        var newRawToken = await _sender.Send(new RefreshTokenCommand(UserId));
+        var newRawToken = await _sender.Send(new RefreshTokenCommand(refreshToken));
         if (newRawToken is null)
             return BadRequest("IDK");
         return Ok(newRawToken);
@@ -67,9 +69,19 @@ public class AuthController : ControllerBase
 
     [Authorize]
     [HttpGet("Me")]
-    public IActionResult Me()
+    public async Task<IActionResult> MeAsync()
     {
-        return Ok();
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (!Guid.TryParse(userIdClaim, out var userId))
+            return Unauthorized();
+
+        var result = await _sender.Send(new GetCurrentUserQuery(userId));
+        return Ok(result);
+
+        /* var result = await _sender.Send(new GetCurrentUserQuery(userId));
+        if (result is null)
+            return BadRequest("Invalid User Id");
+        return Ok(result); */
     }
 
     [Authorize(Roles = "Admin")]

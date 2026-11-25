@@ -8,5 +8,8 @@ public interface IAuthService
     Task<User?> RegisterAsync(RegistrationDTO request, CancellationToken cancellationToken);
     Task<AuthResponseDTO?> LoginAsync(LoginDTO request, CancellationToken cancellationToken);
     Task<bool> LogoutAsync(string rawToken, CancellationToken cancellationToken);
-    Task<string> GenerateAndSaveRefreshToken(Guid userId);
+    Task<AuthResponseDTO?> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
+
+    Task<UserProfileDTO?> GetCurrentUserAsync(Guid userId);
+    // Task<string> GenerateAndSaveRefreshToken(Guid userId);
 }
