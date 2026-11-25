@@ -1,5 +1,6 @@
 using System;
 using DonationHub.Application.Options;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DonationHub.Application;
@@ -15,5 +16,7 @@ public static class DependencyInjection
 
         services.AddMediatR(options =>
             options.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+
+        services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
     }
 }

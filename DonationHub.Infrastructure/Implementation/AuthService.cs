@@ -2,10 +2,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using DonationHub.Application.Features.Admin.DTOs;
 using DonationHub.Application.Features.Auth.DTOs;
 using DonationHub.Application.Interfaces;
 using DonationHub.Application.Options;
 using DonationHub.Domain;
+using DonationHub.Domain.Enums;
 using DonationHub.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -132,6 +134,35 @@ public class AuthService(UserManager<ApplicationUser> _userManager, IUnitOfWork 
             PreferredLanguage: applicationUser.DomainUser.PreferredLanguage,
             Roles: [.. roles]
         );
+    }
+
+    public async Task<bool> CreateStaffAsync(CreateStaffRequestDTO request)
+    {
+        var sharedId = Guid.NewGuid();
+
+        var user = User.Create(
+            id: sharedId,
+            fullName: request.FullName,
+            preferredLanguage: request.PreferredLanguage,
+            utcNow: DateTime.UtcNow
+        );
+
+        var applicationUser = new ApplicationUser
+        {
+            Id = sharedId,
+            UserName = request.Email,
+            Email = request.Email,
+            DomainUser = user
+        };
+
+        var identityResult = await _userManager.CreateAsync(applicationUser, request.Password);
+        if (!identityResult.Succeeded)
+            return false;
+
+        var normalizeRole = Enum.Parse<UserRole>(request.Role, ignoreCase: true).ToString();
+        identityResult = await _userManager.AddToRoleAsync(applicationUser, normalizeRole);
+
+        return identityResult.Succeeded;
     }
 
     public async Task<UserProfileDTO?> GetCurrentUserAsync(Guid userId)

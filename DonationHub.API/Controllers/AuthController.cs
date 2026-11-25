@@ -84,10 +84,4 @@ public class AuthController : ControllerBase
         return Ok(result); */
     }
 
-    [Authorize(Roles = "Admin")]
-    [HttpPost("Admin/Staff")]
-    public IActionResult Staff()
-    {
-        return Ok();
-    }
 }

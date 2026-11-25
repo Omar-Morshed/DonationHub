@@ -1,3 +1,4 @@
+using DonationHub.Application.Features.Admin.DTOs;
 using DonationHub.Application.Features.Auth.DTOs;
 using DonationHub.Domain;
 
@@ -11,5 +12,6 @@ public interface IAuthService
     Task<AuthResponseDTO?> RefreshTokenAsync(string refreshToken, CancellationToken cancellationToken);
 
     Task<UserProfileDTO?> GetCurrentUserAsync(Guid userId);
+    Task<bool> CreateStaffAsync(CreateStaffRequestDTO request);
     // Task<string> GenerateAndSaveRefreshToken(Guid userId);
 }
